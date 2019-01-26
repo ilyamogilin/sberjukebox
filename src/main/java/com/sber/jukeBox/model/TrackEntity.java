@@ -3,6 +3,9 @@ package com.sber.jukeBox.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 
 /**
@@ -15,6 +18,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class TrackEntity {
 
     private int userId;
