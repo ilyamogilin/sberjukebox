@@ -14,14 +14,10 @@
         <!--libs -->
         <spring-boot.version>2.1.1.RELEASE</spring-boot.version>
         <spring.version>5.1.2.RELEASE</spring.version>
-        <thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
-        <thymeleaf-extras-springsecurity5.version>3.0.4.RELEASE</thymeleaf-extras-springsecurity5.version>
         <log4j.version>2.11.1</log4j.version>
-        <h2.version>1.4.197</h2.version>
-        <junit.version>4.12</junit.version>
-        <javax.persistence-api.version>2.2</javax.persistence-api.version>
-        <json-path.version>2.4.0</json-path.version>
         <lombok.version>1.18.0</lombok.version>
+        <javax.persistence-api.version>2.2</javax.persistence-api.version>
+
     </properties>
 
     <parent>
@@ -34,17 +30,10 @@
 
         <!-- spring -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-            <version>${spring-boot.version}</version>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
 
         <!-- other -->
         <dependency>
@@ -58,21 +47,6 @@
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
             <optional>true</optional>
-        </dependency>
-
-        <!--for tests -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <version>${spring-boot.version}</version>
         </dependency>
 
         <dependency>
