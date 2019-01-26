@@ -10,11 +10,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 public class MusicController {
@@ -29,18 +27,9 @@ public class MusicController {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
-    public List<TrackEntity> greeting(int id){
-        return jukeBoxStore.getTracksById(id);
-    }
-
-
     @MessageMapping("/test")
     @SendTo("/topic/test")
     public @ResponseBody TrackList getTracks(){
-        log.error("METHOD CALL");
-        System.out.println("METH CALL");
         TrackList trackList = new TrackList();
         TrackEntity trackEntity = TrackEntity.builder()
                 .trackName("track")
@@ -54,16 +43,10 @@ public class MusicController {
         list.add(trackEntity);
         list.add(trackEntity);
         trackList.setTrackList(list);
+
+        // jukeBoxStore.getTracksById()
+        // or jukeBoxStore.getAllTracks()
         return trackList;
-    }
-
-
-    @MessageMapping("/track/{trackId}")
-    @SendTo("/user")
-    public List<TrackEntity> getTrack(@PathVariable("trackId") int trackId) {
-        log.info("get Track: {}",  JukeBoxStoreImpl.getInstance().getTracksById(trackId));
-
-        return jukeBoxStore.getTracksById(trackId);
     }
 
 }
