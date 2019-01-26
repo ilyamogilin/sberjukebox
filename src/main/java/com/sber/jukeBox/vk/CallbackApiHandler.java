@@ -70,7 +70,6 @@ public class CallbackApiHandler extends CallbackApi {
         AudioFull audio = attachment.getAudio();
         TrackEntity track = TrackEntity.builder()
                 .userId(userId)
-                .jukeboxId(jukeboxMapper.getJukeboxIdByUser(userId))
                 .artistName(audio.getArtist())
                 .trackName(audio.getTitle())
                 .trackUrl(audio.getUrl())

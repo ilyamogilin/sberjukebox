@@ -8,9 +8,7 @@ public interface JukeBoxStore {
 
     void addTrack(TrackEntity entity);
 
-    TrackEntity getTrack(int trackId);
+    List<TrackEntity> getTracksById(int trackId);
 
     void remove(int trackId);
-
-    List<TrackEntity> getAllTracks();
 }

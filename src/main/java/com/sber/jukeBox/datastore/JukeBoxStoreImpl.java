@@ -4,27 +4,28 @@ import com.sber.jukeBox.datastore.api.JukeBoxStore;
 import com.sber.jukeBox.model.TrackEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Component
 public class JukeBoxStoreImpl implements JukeBoxStore {
 
-    private static Map<Integer, TrackEntity> tracks = new ConcurrentHashMap<>();
+    private static Map<Integer, List<TrackEntity>> tracks = new ConcurrentHashMap<>();
 
     //TODO think about intellectual balancing of the store
     public void addTrack(TrackEntity entity) {
-        tracks.put(entity.getUserId(), entity);
+        if (tracks.containsKey(entity.getUserId())) {
+            List<TrackEntity> trackList = tracks.get(entity.getUserId());
+            trackList.add(entity);
+        }
+        tracks.put(entity.getUserId(), Arrays.asList(entity));
     }
 
-    public TrackEntity getTrack(int trackId) {
-        if (!tracks.containsKey(trackId)) {
-            throw new RuntimeException("Track with id: " + trackId + " is not found");
+    public List<TrackEntity> getTracksById(int userId) {
+        if (!tracks.containsKey(userId)) {
+            throw new RuntimeException("Track with id: " + userId + " is not found");
         }
-        return tracks.get(trackId);
+        return tracks.get(userId);
     }
 
     public void remove(int trackId) {

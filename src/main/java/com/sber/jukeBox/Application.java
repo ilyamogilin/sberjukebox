@@ -16,8 +16,8 @@ public class Application {
     public CommandLineRunner demoData() {
         return args -> {
 
-            TrackEntity track1 = new TrackEntity(1, 1, "track name", "artist", "someUrl");
-            TrackEntity track2 = new TrackEntity(2, 2, "track name2", "artist2", "someUrl2");
+            TrackEntity track1 = new TrackEntity(1, "track name", "artist", "someUrl");
+            TrackEntity track2 = new TrackEntity(2, "track name2", "artist2", "someUrl2");
 
             JukeBoxStoreImpl jukeBoxStore = new JukeBoxStoreImpl();
             jukeBoxStore.addTrack(track1);
