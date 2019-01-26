@@ -22,4 +22,7 @@ public class JukeboxMapper {
         return true;
     }
 
+    public Integer getJukeboxIdByUser(Integer userId){
+        return userMap.get(userId);
+    }
 }
