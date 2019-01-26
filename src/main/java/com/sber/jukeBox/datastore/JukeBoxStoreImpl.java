@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 @Component
 public class JukeBoxStoreImpl implements JukeBoxStore {
@@ -33,5 +34,13 @@ public class JukeBoxStoreImpl implements JukeBoxStore {
             throw new RuntimeException("Track with id: " + trackId + " has been already removed");
         }
         tracks.remove(trackId);
+    }
+
+    public List<TrackEntity> getAllTracks() {
+        List<TrackEntity> allTracks = new ArrayList<>();
+        for (Integer userId : tracks.keySet()) {
+            allTracks.addAll(getTracksById(userId));
+        }
+        return allTracks;
     }
 }

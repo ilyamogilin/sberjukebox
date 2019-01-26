@@ -11,4 +11,6 @@ public interface JukeBoxStore {
     List<TrackEntity> getTracksById(int trackId);
 
     void remove(int trackId);
+
+    List<TrackEntity> getAllTracks();
 }
