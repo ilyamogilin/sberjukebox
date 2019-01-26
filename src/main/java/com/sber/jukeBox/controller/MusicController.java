@@ -5,6 +5,8 @@ import com.sber.jukeBox.json.TrackList;
 import com.sber.jukeBox.model.TrackEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -17,12 +19,20 @@ import java.util.List;
 @Controller
 public class MusicController {
 
+    @Bean
+    public JukeBoxStoreImpl jukeBoxStore() {
+        return JukeBoxStoreImpl.getInstance();
+    }
+
+    @Autowired
+    private JukeBoxStoreImpl jukeBoxStore;
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public List<TrackEntity> greeting(int id){
-        return JukeBoxStoreImpl.getInstance().getTracksById(id);
+        return jukeBoxStore.getTracksById(id);
     }
 
 
@@ -51,7 +61,7 @@ public class MusicController {
     public List<TrackEntity> getTrack(@PathVariable("trackId") int trackId) {
         log.info("get Track: {}",  JukeBoxStoreImpl.getInstance().getTracksById(trackId));
 
-        return JukeBoxStoreImpl.getInstance().getTracksById(trackId);
+        return jukeBoxStore.getTracksById(trackId);
     }
 
 }
