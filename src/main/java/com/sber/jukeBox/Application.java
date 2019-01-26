@@ -21,9 +21,6 @@ public class Application {
             
             jukeBoxStore.addTrack(track1);
             jukeBoxStore.addTrack(track2);
-
-            System.out.println(jukeBoxStore);
-
         };
     }
 
