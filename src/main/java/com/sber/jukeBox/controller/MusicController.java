@@ -9,7 +9,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
@@ -26,12 +25,6 @@ public class MusicController {
         return JukeBoxStoreImpl.getInstance().getTracksById(id);
     }
 
-//    @RequestMapping("/track/{id}/")
-//    public List<TrackEntity> getTrack(@PathVariable("id") int id) {
-//        log.info("Track: {}", JukeBoxStoreImpl.getInstance().getTracksById(id));
-//
-//        return JukeBoxStoreImpl.getInstance().getTracksById(id);
-//    }
 
     @MessageMapping("/test")
     @SendTo("/topic/test")

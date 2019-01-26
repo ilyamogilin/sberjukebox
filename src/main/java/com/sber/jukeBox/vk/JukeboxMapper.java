@@ -17,7 +17,7 @@ public class JukeboxMapper {
         return userMap.containsKey(message.getUserId());
     }
 
-    public boolean tryAddUser(Message message) {
+    public boolean addUser(Message message) {
         try {
             userMap.put(message.getUserId(), Integer.parseInt(message.getBody()));
         } catch (NumberFormatException e) {

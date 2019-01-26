@@ -29,7 +29,7 @@ public class CallbackApiHandler extends CallbackApi {
     private MessageSender sender;
 
     @Autowired
-    JukeBoxStore jukeBoxStore;
+    private JukeBoxStore jukeBoxStore;
 
     private JukeboxMapper jukeboxMapper;
     private Set<Integer> messageIds;
@@ -45,8 +45,6 @@ public class CallbackApiHandler extends CallbackApi {
         messageIds = new HashSet<>();
     }
 
-    //    private static final Logger log = LoggerFactory
-
     @Override
     public void messageNew(Integer groupId, Message message) {
         log.info("New message!!");
@@ -60,7 +58,7 @@ public class CallbackApiHandler extends CallbackApi {
                 return;
             }
             if (!jukeboxMapper.checkUser(message)) {
-                if (!jukeboxMapper.tryAddUser(message)){
+                if (!jukeboxMapper.addUser(message)){
                     sender.requestJukeboxId(userId);
                     return;
                 }
