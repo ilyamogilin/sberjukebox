@@ -29,6 +29,8 @@ public class MusicController {
     @MessageMapping("/test")
     @SendTo("/topic/test")
     public @ResponseBody TrackList getTracks(){
+        log.error("METHOD CALL");
+        System.out.println("METH CALL");
         TrackList trackList = new TrackList();
         TrackEntity trackEntity = TrackEntity.builder()
                 .trackName("track")

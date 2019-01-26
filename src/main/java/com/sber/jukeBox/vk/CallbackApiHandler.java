@@ -1,5 +1,6 @@
 package com.sber.jukeBox.vk;
 
+import com.sber.jukeBox.controller.MusicController;
 import com.sber.jukeBox.datastore.api.JukeBoxStore;
 import com.sber.jukeBox.model.TrackEntity;
 import com.vk.api.sdk.callback.CallbackApi;
@@ -70,6 +71,7 @@ public class CallbackApiHandler extends CallbackApi {
                         addTrack(userId, attachment);
                     }
                 }
+                refreshPlaylist(jukeboxMapper.getJukeboxIdByUser(userId));
             }
         } catch (Exception e) {
             log.error("Exception while handling new message", e);
@@ -95,6 +97,10 @@ public class CallbackApiHandler extends CallbackApi {
         jukeBoxStore.addTrack(track);
         sender.audioAdded(userId, track.getFullName());
     }
+
+    private void refreshPlaylist(Integer jukeboxId){
+        //TODO update playlist
+    };
 
     @Override
     public void confirmation(Integer groupId) {
