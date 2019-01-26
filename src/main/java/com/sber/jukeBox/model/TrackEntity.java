@@ -21,4 +21,8 @@ public class TrackEntity {
     private String trackName;
     private String artistName;
     private String trackUrl;
+
+    public String getFullName(){
+        return artistName + " - " + trackName;
+    }
 }

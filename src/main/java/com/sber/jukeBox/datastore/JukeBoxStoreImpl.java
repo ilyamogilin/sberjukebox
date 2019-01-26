@@ -4,22 +4,13 @@ import com.sber.jukeBox.datastore.api.JukeBoxStore;
 import com.sber.jukeBox.model.TrackEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class JukeBoxStoreImpl implements JukeBoxStore {
 
-    private static JukeBoxStoreImpl ourInstance = new JukeBoxStoreImpl();
-
-    public static JukeBoxStoreImpl getInstance() {
-        return ourInstance;
-    }
-
     private static Map<Integer, List<TrackEntity>> tracks = new ConcurrentHashMap<>();
-
 
     //TODO think about intellectual balancing of the store
     public void addTrack(TrackEntity entity) {
@@ -42,9 +33,5 @@ public class JukeBoxStoreImpl implements JukeBoxStore {
             throw new RuntimeException("Track with id: " + trackId + " has been already removed");
         }
         tracks.remove(trackId);
-    }
-
-    public Map<Integer, List<TrackEntity>> getTracks() {
-        return tracks;
     }
 }
