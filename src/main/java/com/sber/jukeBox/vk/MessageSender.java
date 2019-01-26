@@ -16,10 +16,10 @@ public class MessageSender {
     private static final String ACCESS_TOKEN = "8fa7502f32f2a12a42aa9c192b7eb075ac0341ca4ae5a12f61b4f51aed0d343f28aa5f8a1a2c62dbe532d";
 //    private static final String KEYBOARD_PARAM = "keyboard";
 
-    public static final String WELCOME_MESSAGE = "Добро пожаловать!";
-    public static final String REQUEST_ID_MESSAGE = "Пожалуйста, перед отправкой аудиозаписей введите ваш идентификатор.";
+    private static final String WELCOME_MESSAGE = "Добро пожаловать!";
+    private static final String REQUEST_ID_MESSAGE = "Пожалуйста, перед отправкой аудиозаписей введите ваш идентификатор.";
 
-    public static final int GROUP_ID = 177315584;
+    static final int GROUP_ID = 177315584;
 
 
     private VkApiClient vk;
