@@ -6,6 +6,8 @@ import com.vk.api.sdk.client.actors.GroupActor;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import org.springframework.stereotype.Component;
 
+import static java.lang.String.format;
+
 /**
  * @author FORESTER21
  */
@@ -18,6 +20,8 @@ public class MessageSender {
 
     private static final String WELCOME_MESSAGE = "Добро пожаловать!";
     private static final String REQUEST_ID_MESSAGE = "Пожалуйста, перед отправкой аудиозаписей введите ваш идентификатор.";
+    private static final String CONFIRMATION_MESSAGE = "Теперь вы можете отправить аудио для добавление в очередь.";
+    private static final String TRACK_ADDED_MESSAGE = "Аудиозапись \"%s\" добавлена в очередь!";
 
     static final int GROUP_ID = 177315584;
 
@@ -31,40 +35,27 @@ public class MessageSender {
         groupActor = new GroupActor(GROUP_ID, ACCESS_TOKEN);
     }
 
-    public void welcome() throws Exception {
-        send(WELCOME_MESSAGE);
+    public void welcome(Integer userId) throws Exception {
+        send(userId, WELCOME_MESSAGE + "\n" + REQUEST_ID_MESSAGE);
     }
 
-    public void requestJukeboxId() throws Exception {
-        send(REQUEST_ID_MESSAGE);
+    public void requestJukeboxId(Integer userId) throws Exception {
+        send(userId, REQUEST_ID_MESSAGE);
     }
 
-    private void send(String message) throws Exception {
+    public void jukeboxIdConfirmed(Integer userId) throws Exception {
+        send(userId, CONFIRMATION_MESSAGE);
+    }
+
+    public void audioAdded(Integer userId, String trackFullName) throws Exception {
+        send(userId, format(TRACK_ADDED_MESSAGE, trackFullName));
+    }
+
+    private void send(Integer toUserId, String message) throws Exception {
         vk.messages()
                 .send(groupActor)
-                .userId(58559317)
+                .userId(toUserId)
                 .message(message)
                 .execute();
     }
-
-//    public void enableKeyboard() {
-//        try {
-//            vk.messages()
-//                    .send(groupActor)
-//                    .userId(58559317)
-//                    .message("Welcome!")
-//                    .unsafeParam(KEYBOARD_PARAM, getKeyboardJSON())
-//                    .execute();
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    private String getKeyboardJSON() {
-//        try {
-//            return IOUtils.toString(getClass().getResourceAsStream("/keyboard.json"), "UTF-8");
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 }

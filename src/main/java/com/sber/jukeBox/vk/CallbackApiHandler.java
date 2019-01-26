@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.sber.jukeBox.vk.MessageSender.GROUP_ID;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -29,6 +32,7 @@ public class CallbackApiHandler extends CallbackApi {
     JukeBoxStore jukeBoxStore;
 
     private JukeboxMapper jukeboxMapper;
+    private Set<Integer> messageIds;
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -38,6 +42,7 @@ public class CallbackApiHandler extends CallbackApi {
 
     public CallbackApiHandler() {
         jukeboxMapper = new JukeboxMapper();
+        messageIds = new HashSet<>();
     }
 
     //    private static final Logger log = LoggerFactory
@@ -45,19 +50,26 @@ public class CallbackApiHandler extends CallbackApi {
     @Override
     public void messageNew(Integer groupId, Message message) {
         log.info("New message!!");
+        Integer userId = message.getUserId();
         try {
+            if (isMessageProcessed(message.getId())){
+                return;
+            }
             if (BEGIN_KEYWORD.equals(message.getBody())) {
-                sender.welcome();
+                sender.welcome(userId);
                 return;
             }
             if (!jukeboxMapper.checkUser(message)) {
-                sender.requestJukeboxId();
-                return;
+                if (!jukeboxMapper.tryAddUser(message)){
+                    sender.requestJukeboxId(userId);
+                    return;
+                }
+                sender.jukeboxIdConfirmed(userId);
             }
             if (!isEmpty(message.getAttachments())) {
                 for (MessageAttachment attachment : message.getAttachments()) {
                     if (MessageAttachmentType.AUDIO == attachment.getType()) {
-                        addTrack(message.getUserId(), attachment);
+                        addTrack(userId, attachment);
                     }
                 }
             }
@@ -66,7 +78,15 @@ public class CallbackApiHandler extends CallbackApi {
         }
     }
 
-    private void addTrack(Integer userId, MessageAttachment attachment) {
+    private synchronized boolean isMessageProcessed(Integer messageId){
+        if (messageIds.contains(messageId)){
+            return true;
+        }
+        messageIds.add(messageId);
+        return false;
+    }
+
+    private void addTrack(Integer userId, MessageAttachment attachment) throws Exception {
         AudioFull audio = attachment.getAudio();
         TrackEntity track = TrackEntity.builder()
                 .userId(userId)
@@ -75,6 +95,7 @@ public class CallbackApiHandler extends CallbackApi {
                 .trackUrl(audio.getUrl())
                 .build();
         jukeBoxStore.addTrack(track);
+        sender.audioAdded(userId, track.getFullName());
     }
 
     @Override
