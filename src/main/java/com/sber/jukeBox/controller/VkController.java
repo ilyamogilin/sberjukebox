@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class VkController {
@@ -21,19 +19,13 @@ public class VkController {
 
     private static final String CONFIRMATION_CODE = "a54ed201";
 
-//    @GetMapping
-//    public String getStartPage(){
-//        System.out.println("income!");
-//        return "index.html";
-//    }
-
     @PostMapping(value = "/")
     public String verify(@RequestBody String request) {
 
         log.info(request);
 
         callback.parse(request);
-        if (CallbackApiHandler.isConfirmation()){
+        if (CallbackApiHandler.isConfirmation()) {
             CallbackApiHandler.setConfirmation(false);
             return CONFIRMATION_CODE;
         }

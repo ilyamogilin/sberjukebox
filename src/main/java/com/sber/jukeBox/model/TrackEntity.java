@@ -1,6 +1,7 @@
 package com.sber.jukeBox.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 
@@ -13,11 +14,12 @@ import lombok.Data;
  * @trackUrl - the url of the music from Vk
  */
 @Data
+@Builder
 @AllArgsConstructor
 public class TrackEntity {
 
     private int userId;
-    private int trackId;
+    private int jukeboxId;
     private String trackName;
     private String artistName;
     private String trackUrl;
