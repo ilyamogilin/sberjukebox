@@ -5,10 +5,7 @@ import com.sber.jukeBox.json.TrackList;
 import com.sber.jukeBox.model.TrackEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -20,38 +17,21 @@ public class JukeBoxStoreImpl implements JukeBoxStore {
         return ourInstance;
     }
 
-    private static Map<Integer, List<TrackEntity>> tracks = new ConcurrentHashMap<>();
+    private static Map<Integer, List<TrackEntity>> trackStore = new ConcurrentHashMap<>();
+    private TrackList trackList;
 
-
-    //TODO think about intellectual balancing of the store
-    public void addTrack(TrackEntity entity) {
-        if (tracks.containsKey(entity.getUserId())) {
-            List<TrackEntity> trackList = tracks.get(entity.getUserId());
-            trackList.add(entity);
-        }
-        tracks.put(entity.getUserId(), Arrays.asList(entity));
+    public void addTrack(TrackEntity track) {
+        trackStore.computeIfAbsent(track.getJukeboxId(), k -> new ArrayList<>()).add(track);
     }
 
-    public List<TrackEntity> getTracksById(int userId) {
-        if (!tracks.containsKey(userId)) {
-            throw new RuntimeException("Track with id: " + userId + " is not found");
+    public TrackList getTracksById(int jukeboxId) {
+        if (!trackStore.containsKey(jukeboxId)) {
+            throw new RuntimeException("Track List with id: " + jukeboxId + " is not found");
         }
-        return tracks.get(userId);
-    }
-
-    public void remove(int trackId) {
-        if (!tracks.containsKey(trackId)) {
-            throw new RuntimeException("Track with id: " + trackId + " has been already removed");
-        }
-        tracks.remove(trackId);
-    }
-
-    public List<TrackEntity> getAllTracks() {
-        List<TrackEntity> allTracks = new ArrayList<>();
-        for (Integer userId : tracks.keySet()) {
-            allTracks.addAll(getTracksById(userId));
-        }
-        return allTracks;
+        List<TrackEntity> playlist = trackStore.get(jukeboxId);
+        TrackEntity nowPlaying = playlist.get(0);
+        playlist.remove(nowPlaying);
+        return TrackList.builder().nowPlaying(nowPlaying).trackList(playlist).build();
     }
 
     public TrackList getTracksListMock(){
