@@ -53,17 +53,15 @@ public class CallbackApiHandler extends CallbackApi {
     private static final String BEGIN_KEYWORD = "Начать";
     private static final String PAYMENT_KEYWORD = "Оплатить";
 
-    private HashMap<String, Integer> paymentChoiceCollection = createMapPayment();
+    private HashMap<String, Integer> paymentChoiceCollection;
 
-    private static HashMap<String, Integer> createMapPayment() {
-        HashMap<String, Integer> paymentMap = new HashMap<>();
+    private void initMapPayment() {
+        paymentChoiceCollection = new HashMap<>();
 
-        paymentMap.put("Сбер", 1);
-        paymentMap.put("Qiwi", 2);
-        paymentMap.put("Visa/Mastercard", 3);
-        paymentMap.put("VkPay", 4);
-
-        return paymentMap;
+        paymentChoiceCollection.put("Сбер", 1);
+        paymentChoiceCollection.put("Qiwi", 2);
+        paymentChoiceCollection.put("Visa/Mastercard", 3);
+        paymentChoiceCollection.put("VkPay", 4);
     }
 
     private static boolean isConfirmation;
@@ -71,6 +69,7 @@ public class CallbackApiHandler extends CallbackApi {
     public CallbackApiHandler() {
         jukeboxMapper = new JukeboxMapper();
         messageIds = new HashSet<>();
+        initMapPayment();
     }
 
     @Override
@@ -85,12 +84,11 @@ public class CallbackApiHandler extends CallbackApi {
                 sender.welcome(userId);
                 return;
             }
-//            sender.askPayment(userId);
             if (PAYMENT_KEYWORD.equals(message.getBody())) {
                 askPaymentCode(userId);
                 return;
             }
-            if (paymentChoiceCollection.containsValue(message.getBody())) {
+            if (paymentChoiceCollection.containsKey(message.getBody())) {
                 int paymentCode = paymentChoiceCollection.get(message.getBody());
 
                 Invoice invoice = new Invoice(message.getActionEmail(), message.getUserId(), Invoice.Status.Wait, paymentCode);
@@ -115,6 +113,7 @@ public class CallbackApiHandler extends CallbackApi {
                     }
                 }
                 refreshPlaylist(jukeboxMapper.getJukeboxIdByUser(userId));
+                sender.askPayment(userId);
             }
         } catch (Exception e) {
             log.error("Exception while handling new message", e);
