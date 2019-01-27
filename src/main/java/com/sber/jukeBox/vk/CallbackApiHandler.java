@@ -1,6 +1,6 @@
 package com.sber.jukeBox.vk;
 
-import com.sber.jukeBox.datastore.api.JukeBoxStore;
+import com.sber.jukeBox.datastore.JukeBoxStoreImpl;
 import com.sber.jukeBox.model.TrackEntity;
 import com.vk.api.sdk.callback.CallbackApi;
 import com.vk.api.sdk.objects.audio.AudioFull;
@@ -10,6 +10,7 @@ import com.vk.api.sdk.objects.messages.MessageAttachmentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -28,8 +29,12 @@ public class CallbackApiHandler extends CallbackApi {
     @Autowired
     private MessageSender sender;
 
+    //TODO change to interface
     @Autowired
-    private JukeBoxStore jukeBoxStore;
+    private JukeBoxStoreImpl jukeBoxStore;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     private JukeboxMapper jukeboxMapper;
     private Set<Integer> messageIds;
@@ -38,6 +43,7 @@ public class CallbackApiHandler extends CallbackApi {
 
 
     private static final String BEGIN_KEYWORD = "Начать";
+    private static final String PAYMENT_KEYWORD = "Оплатить";
     private static boolean isConfirmation;
 
     public CallbackApiHandler() {
@@ -57,6 +63,9 @@ public class CallbackApiHandler extends CallbackApi {
                 sender.welcome(userId);
                 return;
             }
+            if (PAYMENT_KEYWORD.equals(message.getBody())) {
+                generateInvoice(userId);
+            }
             if (!jukeboxMapper.checkUser(message)) {
                 if (!jukeboxMapper.addUser(message)) {
                     sender.requestJukeboxId(userId);
@@ -70,14 +79,8 @@ public class CallbackApiHandler extends CallbackApi {
                         addTrack(userId, attachment);
                     }
                 }
-
-                generateInvoice(userId);
-
                 refreshPlaylist(jukeboxMapper.getJukeboxIdByUser(userId));
             }
-
-
-
         } catch (Exception e) {
             log.error("Exception while handling new message", e);
         }
@@ -91,8 +94,8 @@ public class CallbackApiHandler extends CallbackApi {
 
     }
 
-    private synchronized boolean isMessageProcessed(Integer messageId){
-        if (messageIds.contains(messageId)){
+    private synchronized boolean isMessageProcessed(Integer messageId) {
+        if (messageIds.contains(messageId)) {
             return true;
         }
         messageIds.add(messageId);
@@ -111,8 +114,8 @@ public class CallbackApiHandler extends CallbackApi {
         sender.audioAdded(userId, track.getFullName());
     }
 
-    private void refreshPlaylist(Integer jukeboxId){
-        //TODO update playlist
+    private void refreshPlaylist(Integer jukeboxId) {
+        simpMessagingTemplate.convertAndSend("/topic/test", jukeBoxStore.getTracksListMock());
     }
 
     @Override
