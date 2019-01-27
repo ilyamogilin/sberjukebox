@@ -14,7 +14,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class MusicController {
 
-    private static final String TOPIC_ENDPOINT = "/topic/test";
+    public static final String TOPIC_ENDPOINT = "/topic/test";
 
     @Bean
     public JukeBoxStoreImpl jukeBoxStore() {
@@ -31,9 +31,9 @@ public class MusicController {
 
     @MessageMapping("/test/{jukeboxId}")
     @SendTo(TOPIC_ENDPOINT)
-    public void getTracks(@DestinationVariable String jukeboxId) {
+    public void getTracks(@DestinationVariable int jukeboxId) {
         log.info("getTracks() METHOD CALLED");
-        simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT + "/" + jukeboxId, jukeBoxStore.getTracksListMock());
+        simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT + "/" + jukeboxId, jukeBoxStore.getTracksById(jukeboxId));
         return;
     }
 
