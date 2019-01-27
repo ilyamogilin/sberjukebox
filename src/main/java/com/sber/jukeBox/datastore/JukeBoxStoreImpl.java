@@ -24,9 +24,9 @@ public class JukeBoxStoreImpl implements JukeBoxStore {
         trackStore.computeIfAbsent(track.getJukeboxId(), k -> new ArrayList<>()).add(track);
     }
 
-    public TrackList getTracksById(int jukeboxId) {
+    public TrackList getTracksWithNowPlaying(int jukeboxId) {
         if (!trackStore.containsKey(jukeboxId)) {
-            throw new RuntimeException("Track List with id: " + jukeboxId + " is not found");
+            return TrackList.builder().build();
         }
         List<TrackEntity> playlist = trackStore.get(jukeboxId);
         TrackEntity nowPlaying = playlist.get(0);
@@ -34,20 +34,11 @@ public class JukeBoxStoreImpl implements JukeBoxStore {
         return TrackList.builder().nowPlaying(nowPlaying).trackList(playlist).build();
     }
 
-    public TrackList getTracksListMock(){
-        TrackList trackList = new TrackList();
-        TrackEntity trackEntity = TrackEntity.builder()
-                .trackName("track")
-                .trackUrl("https://cs1-76v4.vkuseraudio.net/p17/641974acff62ce.mp3?extra=omaFKfh6z_pP8x4kSaFY_1P3w5lrS8WClK_T42z391nAScE8Tn7zhsOBGx6Sb5tZeBlU2rZbdtlR19SL1dWa7g1u-rdOf8-YjquJA7VQYX5J5zVgioPkwz0OBcDApmktg4OjoAoGSTa4oQGKv8hwjrzA")
-                .artistName("artist")
-                .userId(321)
-                .build();
-
-        trackList.setNowPlaying(trackEntity);
-        ArrayList<TrackEntity> list = new ArrayList<>();
-        list.add(trackEntity);
-        list.add(trackEntity);
-        trackList.setTrackList(list);
-        return trackList;
+    public TrackList getAllTracks(int jukeboxId) {
+        if (!trackStore.containsKey(jukeboxId)) {
+            throw new RuntimeException("Track List with id: " + jukeboxId + " is not found");
+        }
+        return TrackList.builder().trackList(trackStore.get(jukeboxId)).build();
     }
+
 }

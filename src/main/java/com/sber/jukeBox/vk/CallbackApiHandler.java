@@ -3,6 +3,7 @@ package com.sber.jukeBox.vk;
 import com.sber.jukeBox.datastore.InvoiceList;
 import com.sber.jukeBox.datastore.JukeBoxStoreImpl;
 import com.sber.jukeBox.model.Invoice;
+import com.sber.jukeBox.datastore.api.JukeBoxStore;
 import com.sber.jukeBox.model.TrackEntity;
 import com.vk.api.sdk.callback.CallbackApi;
 import com.vk.api.sdk.objects.audio.AudioFull;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.sber.jukeBox.controller.MusicController.TOPIC_ENDPOINT;
 import static com.sber.jukeBox.vk.MessageSender.GROUP_ID;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -32,9 +34,8 @@ public class CallbackApiHandler extends CallbackApi {
     @Autowired
     private MessageSender sender;
 
-    //TODO change to interface
     @Autowired
-    private JukeBoxStoreImpl jukeBoxStore;
+    private JukeBoxStore jukeBoxStore;
 
     @Autowired
     private InvoiceList invoiceList;
@@ -146,13 +147,14 @@ public class CallbackApiHandler extends CallbackApi {
                 .artistName(audio.getArtist())
                 .trackName(audio.getTitle())
                 .trackUrl(audio.getUrl())
+                .jukeboxId(jukeboxMapper.getJukeboxIdByUser(userId))
                 .build();
         jukeBoxStore.addTrack(track);
         sender.audioAdded(userId, track.getFullName());
     }
 
     private void refreshPlaylist(Integer jukeboxId) {
-        simpMessagingTemplate.convertAndSend("/topic/test", jukeBoxStore.getTracksListMock());
+        simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT, jukeBoxStore.getTracksWithNowPlaying(jukeboxId));
     }
 
     @Override
