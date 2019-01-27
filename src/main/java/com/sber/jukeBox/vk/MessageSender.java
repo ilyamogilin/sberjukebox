@@ -28,8 +28,10 @@ public class MessageSender {
     private static final String PAYMENT_MESSAGE = "Выберите способ оплаты.";
     private static final String KEYBOARD = "keyboard";
     public static final String SUCCESS_PAYMENT = "Обработка платежа успешно завершена";
+    private static final String INVOICE_REMINDER = "Вам нужно оплатить счет ";
 
     private static final String INVOICE_MESSAGE = "Перейдите по ссылке и оплатите счет. ";
+    private static final String INVOICE_URL = "http://localhost:8100/invoice/";
 
 
     static final int GROUP_ID = 177315584;
@@ -91,6 +93,10 @@ public class MessageSender {
     }
 
     public void sendInvoice(Invoice invoice, Integer userId, int invoiceId) throws Exception {
-        send(userId, INVOICE_MESSAGE + "http://javathon.kolebor.ru:8100/invoice/" + invoiceId);
+        send(userId, INVOICE_MESSAGE + "" + invoiceId);
+    }
+
+    public void sendRemindInvoice(Integer userId, int invoiceId) throws Exception {
+        send(userId, INVOICE_REMINDER + INVOICE_URL + invoiceId);
     }
 }

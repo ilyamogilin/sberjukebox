@@ -2,9 +2,8 @@ package com.sber.jukeBox.vk;
 
 import com.sber.jukeBox.datastore.InvoiceList;
 import com.sber.jukeBox.datastore.JukeBoxStoreImpl;
-import com.sber.jukeBox.datastore.api.JukeBoxStore;
-import com.sber.jukeBox.model.Invoice;
 import com.sber.jukeBox.json.TrackList;
+import com.sber.jukeBox.model.Invoice;
 import com.sber.jukeBox.model.TrackEntity;
 import com.vk.api.sdk.callback.CallbackApi;
 import com.vk.api.sdk.objects.audio.AudioFull;
@@ -88,11 +87,12 @@ public class CallbackApiHandler extends CallbackApi {
                 askPaymentCode(userId);
                 return;
             }
+            int invoiceId = 0;
             if (paymentChoiceCollection.containsKey(message.getBody())) {
                 int paymentCode = paymentChoiceCollection.get(message.getBody());
 
                 Invoice invoice = new Invoice(message.getActionEmail(), message.getUserId(), Invoice.Status.Wait, paymentCode);
-                int invoiceId = invoiceList.addInvoice(invoice);
+                invoiceId = invoiceList.addInvoice(invoice);
 
                 sender.sendInvoice(invoice, userId, invoiceId);
 
@@ -108,8 +108,11 @@ public class CallbackApiHandler extends CallbackApi {
             }
             if (!isEmpty(message.getAttachments())) {
                 for (MessageAttachment attachment : message.getAttachments()) {
-                    if (MessageAttachmentType.AUDIO == attachment.getType()) {
+                    if (MessageAttachmentType.AUDIO == attachment.getType()
+                            && invoiceList.getInvoice(invoiceId).getPaymentStatus() == Invoice.Status.Success) {
                         addTrack(userId, attachment);
+                    } else {
+                        sender.sendRemindInvoice(userId, invoiceId);
                     }
                 }
                 refreshPlaylist(jukeboxMapper.getJukeboxIdByUser(userId));
