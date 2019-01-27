@@ -15,14 +15,14 @@ public class Application {
         return args -> {
 
             TrackEntity track1 = new TrackEntity(1, 1, "track name", "artist", "someUrl");
-            TrackEntity track2 = new TrackEntity(1, 1, "track", "art", "url");
-            TrackEntity track3 = new TrackEntity(2, 1, "track name2", "artist2", "someUrl2");
+            //TrackEntity track2 = new TrackEntity(1, 1, "track", "art", "url");
+            //TrackEntity track3 = new TrackEntity(2, 1, "track name2", "artist2", "someUrl2");
 
             JukeBoxStoreImpl jukeBoxStore = JukeBoxStoreImpl.getInstance();
             
-            jukeBoxStore.addTrack(track1);
-            jukeBoxStore.addTrack(track2);
-            jukeBoxStore.addTrack(track3);
+            //jukeBoxStore.addTrack(track1);
+            //jukeBoxStore.addTrack(track2);
+            //jukeBoxStore.addTrack(track3);
             jukeBoxStore.getTracksWithNowPlaying(1);
         };
     }

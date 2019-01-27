@@ -26,7 +26,7 @@ public class JukeBoxStoreImpl implements JukeBoxStore {
 
     public TrackList getTracksWithNowPlaying(int jukeboxId) {
         if (!trackStore.containsKey(jukeboxId)) {
-            throw new RuntimeException("Track List with id: " + jukeboxId + " is not found");
+            return TrackList.builder().build();
         }
         List<TrackEntity> playlist = trackStore.get(jukeboxId);
         TrackEntity nowPlaying = playlist.get(0);
