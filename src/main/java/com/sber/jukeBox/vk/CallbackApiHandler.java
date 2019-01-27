@@ -1,6 +1,5 @@
 package com.sber.jukeBox.vk;
 
-import com.sber.jukeBox.controller.MusicController;
 import com.sber.jukeBox.datastore.api.JukeBoxStore;
 import com.sber.jukeBox.model.TrackEntity;
 import com.vk.api.sdk.callback.CallbackApi;
@@ -51,7 +50,7 @@ public class CallbackApiHandler extends CallbackApi {
         log.info("New message!!");
         Integer userId = message.getUserId();
         try {
-            if (isMessageProcessed(message.getId())){
+            if (isMessageProcessed(message.getId())) {
                 return;
             }
             if (BEGIN_KEYWORD.equals(message.getBody())) {
@@ -59,7 +58,7 @@ public class CallbackApiHandler extends CallbackApi {
                 return;
             }
             if (!jukeboxMapper.checkUser(message)) {
-                if (!jukeboxMapper.addUser(message)){
+                if (!jukeboxMapper.addUser(message)) {
                     sender.requestJukeboxId(userId);
                     return;
                 }
@@ -71,11 +70,25 @@ public class CallbackApiHandler extends CallbackApi {
                         addTrack(userId, attachment);
                     }
                 }
+
+                generateInvoice(userId);
+
                 refreshPlaylist(jukeboxMapper.getJukeboxIdByUser(userId));
             }
+
+
+
         } catch (Exception e) {
             log.error("Exception while handling new message", e);
         }
+    }
+
+    private void generateInvoice(int userId) throws Exception {
+
+        sender.generatePaymentChoice(userId);
+
+        // processingInvoice()
+
     }
 
     private synchronized boolean isMessageProcessed(Integer messageId){
@@ -100,7 +113,7 @@ public class CallbackApiHandler extends CallbackApi {
 
     private void refreshPlaylist(Integer jukeboxId){
         //TODO update playlist
-    };
+    }
 
     @Override
     public void confirmation(Integer groupId) {

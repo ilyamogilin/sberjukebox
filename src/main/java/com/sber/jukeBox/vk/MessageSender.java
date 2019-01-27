@@ -16,12 +16,11 @@ import static java.lang.String.format;
 public class MessageSender {
 
     private static final String ACCESS_TOKEN = "8fa7502f32f2a12a42aa9c192b7eb075ac0341ca4ae5a12f61b4f51aed0d343f28aa5f8a1a2c62dbe532d";
-//    private static final String KEYBOARD_PARAM = "keyboard";
-
     private static final String WELCOME_MESSAGE = "Добро пожаловать!";
     private static final String REQUEST_ID_MESSAGE = "Пожалуйста, перед отправкой аудиозаписей введите ваш идентификатор.";
     private static final String CONFIRMATION_MESSAGE = "Теперь вы можете отправить аудио для добавление в очередь.";
     private static final String TRACK_ADDED_MESSAGE = "Аудиозапись \"%s\" добавлена в очередь!";
+    private static final String PAYMENT_CHOICE = "1 - VkPay, 2 - Сбер, 3 - Qiwi";
 
     static final int GROUP_ID = 177315584;
 
@@ -57,5 +56,9 @@ public class MessageSender {
                 .userId(toUserId)
                 .message(message)
                 .execute();
+    }
+
+    public void generatePaymentChoice(Integer userId) throws Exception {
+        send(userId, PAYMENT_CHOICE );
     }
 }
