@@ -1,6 +1,8 @@
 package com.sber.jukeBox;
 
+import com.sber.jukeBox.datastore.InvoiceList;
 import com.sber.jukeBox.datastore.JukeBoxStoreImpl;
+import com.sber.jukeBox.model.Invoice;
 import com.sber.jukeBox.model.TrackEntity;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -24,6 +26,10 @@ public class Application {
             //jukeBoxStore.addTrack(track2);
             //jukeBoxStore.addTrack(track3);
             jukeBoxStore.getTracksWithNowPlaying(1);
+
+            Invoice invoice = new Invoice("email", 12, Invoice.Status.Wait, 1);
+            int invoiceId = InvoiceList.getInstance().addInvoice(invoice);
+            System.out.println(invoiceId);
 
         };
     }
