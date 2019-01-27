@@ -20,6 +20,8 @@ public class MessageSender {
     private static final String REQUEST_ID_MESSAGE = "Пожалуйста, перед отправкой аудиозаписей введите ваш идентификатор.";
     private static final String CONFIRMATION_MESSAGE = "Теперь вы можете отправить аудио для добавление в очередь.";
     private static final String TRACK_ADDED_MESSAGE = "Аудиозапись \"%s\" добавлена в очередь!";
+    private static final String PAYMENT_MESSAGE = "Выберите способ оплаты.";
+    private static final String KEYBOARD = "keyboard";
     private static final String KEYBOARD_JSON = "{\n" +
             "    \"one_time\": false, \n" +
             "    \"buttons\": [ \n" +
@@ -98,7 +100,8 @@ public class MessageSender {
         vk.messages()
                 .send(groupActor)
                 .userId(toUserId)
-                .unsafeParam("keyboard", keyboardJson)
+                .unsafeParam(KEYBOARD, keyboardJson)
+                .message(PAYMENT_MESSAGE)
                 .execute();
     }
 
