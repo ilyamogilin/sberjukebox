@@ -1,10 +1,12 @@
 package com.sber.jukeBox.datastore;
 
 import com.sber.jukeBox.model.Invoice;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Component
 public class InvoiceList {
 
     private static InvoiceList ourInstance = new InvoiceList();
