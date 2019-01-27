@@ -34,4 +34,9 @@ public class MusicController {
         return;
     }
 
+    @MessageMapping("/test/handshake")
+    public String doHandshake(){
+        return "ok";
+    }
+
 }
