@@ -20,7 +20,43 @@ public class MessageSender {
     private static final String REQUEST_ID_MESSAGE = "Пожалуйста, перед отправкой аудиозаписей введите ваш идентификатор.";
     private static final String CONFIRMATION_MESSAGE = "Теперь вы можете отправить аудио для добавление в очередь.";
     private static final String TRACK_ADDED_MESSAGE = "Аудиозапись \"%s\" добавлена в очередь!";
-    private static final String PAYMENT_CHOICE = "1 - VkPay, 2 - Сбер, 3 - Qiwi";
+    private static final String KEYBOARD_JSON = "{\n" +
+            "    \"one_time\": false, \n" +
+            "    \"buttons\": [ \n" +
+            "      [{ \n" +
+            "        \"action\": { \n" +
+            "          \"type\": \"text\", \n" +
+            "          \"payload\": \"{\\\"button\\\": \\\"1\\\"}\", \n" +
+            "          \"label\": \"Сбер\" \n" +
+            "        }, \n" +
+            "        \"color\": \"primary\" \n" +
+            "      }, \n" +
+            "     { \n" +
+            "        \"action\": { \n" +
+            "          \"type\": \"text\", \n" +
+            "          \"payload\": \"{\\\"button\\\": \\\"2\\\"}\", \n" +
+            "          \"label\": \"Qiwi\" \n" +
+            "        }, \n" +
+            "        \"color\": \"default\" \n" +
+            "      }], \n" +
+            "      [{ \n" +
+            "        \"action\": { \n" +
+            "          \"type\": \"text\", \n" +
+            "          \"payload\": \"{\\\"button\\\": \\\"3\\\"}\", \n" +
+            "          \"label\": \"VkPay\" \n" +
+            "        }, \n" +
+            "        \"color\": \"default\" \n" +
+            "      }, \n" +
+            "     { \n" +
+            "        \"action\": { \n" +
+            "          \"type\": \"text\", \n" +
+            "          \"payload\": \"{\\\"button\\\": \\\"4\\\"}\", \n" +
+            "          \"label\": \"Visa/Mastercard\" \n" +
+            "        }, \n" +
+            "        \"color\": \"default\" \n" +
+            "      }] \n" +
+            "    ] \n" +
+            "  } ";
 
     static final int GROUP_ID = 177315584;
 
@@ -58,7 +94,16 @@ public class MessageSender {
                 .execute();
     }
 
-    public void generatePaymentChoice(Integer userId) throws Exception {
-        send(userId, PAYMENT_CHOICE );
+    private void sendKeyboard(Integer toUserId, String keyboardJson) throws Exception {
+        vk.messages()
+                .send(groupActor)
+                .userId(toUserId)
+                .unsafeParam("keyboard", keyboardJson)
+                .execute();
+    }
+
+    public void getPaymentChoice(Integer userId) throws Exception {
+
+        sendKeyboard(userId, KEYBOARD_JSON);
     }
 }

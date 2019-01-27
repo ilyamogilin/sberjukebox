@@ -85,7 +85,7 @@ public class CallbackApiHandler extends CallbackApi {
 
     private void generateInvoice(int userId) throws Exception {
 
-        sender.generatePaymentChoice(userId);
+        sender.getPaymentChoice(userId);
 
         // processingInvoice()
 
