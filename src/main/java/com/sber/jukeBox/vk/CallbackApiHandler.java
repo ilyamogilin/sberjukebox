@@ -1,8 +1,10 @@
 package com.sber.jukeBox.vk;
 
 import com.sber.jukeBox.datastore.InvoiceList;
+import com.sber.jukeBox.datastore.JukeBoxStoreImpl;
 import com.sber.jukeBox.datastore.api.JukeBoxStore;
 import com.sber.jukeBox.model.Invoice;
+import com.sber.jukeBox.json.TrackList;
 import com.sber.jukeBox.model.TrackEntity;
 import com.vk.api.sdk.callback.CallbackApi;
 import com.vk.api.sdk.objects.audio.AudioFull;
@@ -34,7 +36,7 @@ public class CallbackApiHandler extends CallbackApi {
     private MessageSender sender;
 
     @Autowired
-    private JukeBoxStore jukeBoxStore;
+    private JukeBoxStoreImpl jukeBoxStore;
 
     @Autowired
     private InvoiceList invoiceList;
@@ -83,7 +85,7 @@ public class CallbackApiHandler extends CallbackApi {
                 sender.welcome(userId);
                 return;
             }
-            sender.askPayment(userId);
+//            sender.askPayment(userId);
             if (PAYMENT_KEYWORD.equals(message.getBody())) {
                 askPaymentCode(userId);
                 return;
@@ -146,7 +148,12 @@ public class CallbackApiHandler extends CallbackApi {
     }
 
     private void refreshPlaylist(Integer jukeboxId) {
-        simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT, jukeBoxStore.getTracksWithNowPlaying(jukeboxId));
+        TrackList trackList = jukeBoxStore.isPlayerEmpty(jukeboxId) ?
+                jukeBoxStore.getTracksWithNowPlaying(jukeboxId) : jukeBoxStore.getAllTracks(jukeboxId);
+        if (trackList.getNowPlaying() != null){
+            jukeBoxStore.setPlayerEmpty(jukeboxId, false);
+        }
+        simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT + "/" + jukeboxId, trackList);
     }
 
     @Override
