@@ -7,5 +7,7 @@ public interface JukeBoxStore {
 
     void addTrack(TrackEntity entity);
 
-    TrackList getTracksById(int trackId);
+    TrackList getTracksWithNowPlaying(int jukeboxId);
+
+    TrackList getAllTracks(int jukeboxId);
 }

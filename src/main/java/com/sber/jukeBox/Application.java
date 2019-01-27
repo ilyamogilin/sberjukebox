@@ -23,7 +23,7 @@ public class Application {
             jukeBoxStore.addTrack(track1);
             jukeBoxStore.addTrack(track2);
             jukeBoxStore.addTrack(track3);
-            jukeBoxStore.getTracksById(1);
+            jukeBoxStore.getTracksWithNowPlaying(1);
         };
     }
 

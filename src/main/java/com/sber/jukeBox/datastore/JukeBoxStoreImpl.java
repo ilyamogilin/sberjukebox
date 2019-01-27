@@ -24,7 +24,7 @@ public class JukeBoxStoreImpl implements JukeBoxStore {
         trackStore.computeIfAbsent(track.getJukeboxId(), k -> new ArrayList<>()).add(track);
     }
 
-    public TrackList getTracksById(int jukeboxId) {
+    public TrackList getTracksWithNowPlaying(int jukeboxId) {
         if (!trackStore.containsKey(jukeboxId)) {
             throw new RuntimeException("Track List with id: " + jukeboxId + " is not found");
         }
@@ -34,5 +34,11 @@ public class JukeBoxStoreImpl implements JukeBoxStore {
         return TrackList.builder().nowPlaying(nowPlaying).trackList(playlist).build();
     }
 
+    public TrackList getAllTracks(int jukeboxId) {
+        if (!trackStore.containsKey(jukeboxId)) {
+            throw new RuntimeException("Track List with id: " + jukeboxId + " is not found");
+        }
+        return TrackList.builder().trackList(trackStore.get(jukeboxId)).build();
+    }
 
 }

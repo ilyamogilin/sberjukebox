@@ -117,7 +117,7 @@ public class CallbackApiHandler extends CallbackApi {
     }
 
     private void refreshPlaylist(Integer jukeboxId) {
-        simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT, jukeBoxStore.getTracksById(jukeboxId));
+        simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT, jukeBoxStore.getTracksWithNowPlaying(jukeboxId));
     }
 
     @Override

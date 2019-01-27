@@ -33,7 +33,7 @@ public class MusicController {
     @SendTo(TOPIC_ENDPOINT)
     public void getTracks(@DestinationVariable int jukeboxId) {
         log.info("getTracks() METHOD CALLED");
-        simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT + "/" + jukeboxId, jukeBoxStore.getTracksById(jukeboxId));
+        simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT + "/" + jukeboxId, jukeBoxStore.getTracksWithNowPlaying(jukeboxId));
         return;
     }
 
