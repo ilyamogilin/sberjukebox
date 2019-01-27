@@ -24,6 +24,7 @@ public class Application {
             //jukeBoxStore.addTrack(track2);
             //jukeBoxStore.addTrack(track3);
             jukeBoxStore.getTracksWithNowPlaying(1);
+
         };
     }
 

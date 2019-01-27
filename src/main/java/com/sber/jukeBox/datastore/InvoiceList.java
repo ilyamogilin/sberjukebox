@@ -10,7 +10,6 @@ public class InvoiceList {
     private static InvoiceList ourInstance = new InvoiceList();
     private final AtomicInteger counter = new AtomicInteger();
 
-
     public static InvoiceList getInstance() {
         return ourInstance;
     }

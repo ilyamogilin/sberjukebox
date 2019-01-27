@@ -96,8 +96,7 @@ public class CallbackApiHandler extends CallbackApi {
 
                 sender.sendInvoice(invoice, userId, invoiceId);
 
-                // wait some time
-                processingInvoice(invoice);
+
 
             }
             if (!jukeboxMapper.checkUser(message)) {
@@ -119,15 +118,6 @@ public class CallbackApiHandler extends CallbackApi {
             log.error("Exception while handling new message", e);
         }
     }
-
-    private void processingInvoice(Invoice invoice) throws Exception {
-        // after some time
-        invoice.setPaymentStatus(Invoice.Status.Success);
-        if (invoice.getPaymentStatus() == Invoice.Status.Success) {
-            sender.sendSuccessPayment(invoice.getUserId());
-        }
-    }
-
 
     private void askPaymentCode(int userId) throws Exception {
 
