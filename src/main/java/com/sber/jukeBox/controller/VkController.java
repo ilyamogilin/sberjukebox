@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/olol")
 public class VkController {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
