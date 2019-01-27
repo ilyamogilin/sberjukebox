@@ -21,7 +21,10 @@ public class InvoiceList {
         return listInvoices.get(id);
     }
 
-    public void addInvoice(Invoice invoice) {
-        listInvoices.put(counter.incrementAndGet(), invoice);
+    public int addInvoice(Invoice invoice) {
+        int invoiceId = counter.incrementAndGet();
+         listInvoices.put(invoiceId, invoice);
+
+         return invoiceId;
     }
 }

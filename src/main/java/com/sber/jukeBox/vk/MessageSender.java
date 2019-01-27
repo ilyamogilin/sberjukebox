@@ -1,5 +1,6 @@
 package com.sber.jukeBox.vk;
 
+import com.sber.jukeBox.model.Invoice;
 import com.vk.api.sdk.client.TransportClient;
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.GroupActor;
@@ -27,6 +28,9 @@ public class MessageSender {
     private static final String PAYMENT_MESSAGE = "Выберите способ оплаты.";
     private static final String KEYBOARD = "keyboard";
     public static final String SUCCESS_PAYMENT = "Обработка платежа успешно завершена";
+
+    private static final String INVOICE_MESSAGE = "Перейдите по ссылке и оплатите счет. \"%s\"";
+
 
     static final int GROUP_ID = 177315584;
 
@@ -84,5 +88,9 @@ public class MessageSender {
 
     public void sendSuccessPayment(Integer userId) throws Exception {
         send(userId, SUCCESS_PAYMENT);
+    }
+
+    public void sendInvoice(Invoice invoice, Integer userId, int invoiceId) throws Exception {
+        send(userId, format(INVOICE_MESSAGE, "http://javathon.kolebor.ru:8100/invoice/", invoiceId));
     }
 }

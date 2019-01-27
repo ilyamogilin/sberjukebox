@@ -1,9 +1,8 @@
 package com.sber.jukeBox.vk;
 
 import com.sber.jukeBox.datastore.InvoiceList;
-import com.sber.jukeBox.datastore.JukeBoxStoreImpl;
-import com.sber.jukeBox.model.Invoice;
 import com.sber.jukeBox.datastore.api.JukeBoxStore;
+import com.sber.jukeBox.model.Invoice;
 import com.sber.jukeBox.model.TrackEntity;
 import com.vk.api.sdk.callback.CallbackApi;
 import com.vk.api.sdk.objects.audio.AudioFull;
@@ -93,9 +92,12 @@ public class CallbackApiHandler extends CallbackApi {
                 int paymentCode = paymentChoiceCollection.get(message.getBody());
 
                 Invoice invoice = new Invoice(message.getActionEmail(), message.getUserId(), Invoice.Status.Wait, paymentCode);
-                invoiceList.addInvoice(invoice);
+                int invoiceId = invoiceList.addInvoice(invoice);
+
+                sender.sendInvoice(invoice, userId, invoiceId);
 
                 // wait some time
+                processingInvoice(invoice);
 
             }
             if (!jukeboxMapper.checkUser(message)) {
