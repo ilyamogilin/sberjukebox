@@ -6,6 +6,9 @@ import com.vk.api.sdk.client.actors.GroupActor;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import static java.lang.String.format;
 
 /**
@@ -22,44 +25,6 @@ public class MessageSender {
     private static final String TRACK_ADDED_MESSAGE = "Аудиозапись \"%s\" добавлена в очередь!";
     private static final String PAYMENT_MESSAGE = "Выберите способ оплаты.";
     private static final String KEYBOARD = "keyboard";
-    private static final String KEYBOARD_JSON = "{\n" +
-            "    \"one_time\": false, \n" +
-            "    \"buttons\": [ \n" +
-            "      [{ \n" +
-            "        \"action\": { \n" +
-            "          \"type\": \"text\", \n" +
-            "          \"payload\": \"{\\\"button\\\": \\\"1\\\"}\", \n" +
-            "          \"label\": \"Сбер\" \n" +
-            "        }, \n" +
-            "        \"color\": \"primary\" \n" +
-            "      }, \n" +
-            "     { \n" +
-            "        \"action\": { \n" +
-            "          \"type\": \"text\", \n" +
-            "          \"payload\": \"{\\\"button\\\": \\\"2\\\"}\", \n" +
-            "          \"label\": \"Qiwi\" \n" +
-            "        }, \n" +
-            "        \"color\": \"default\" \n" +
-            "      }], \n" +
-            "      [{ \n" +
-            "        \"action\": { \n" +
-            "          \"type\": \"text\", \n" +
-            "          \"payload\": \"{\\\"button\\\": \\\"3\\\"}\", \n" +
-            "          \"label\": \"VkPay\" \n" +
-            "        }, \n" +
-            "        \"color\": \"default\" \n" +
-            "      }, \n" +
-            "     { \n" +
-            "        \"action\": { \n" +
-            "          \"type\": \"text\", \n" +
-            "          \"payload\": \"{\\\"button\\\": \\\"4\\\"}\", \n" +
-            "          \"label\": \"Visa/Mastercard\" \n" +
-            "        }, \n" +
-            "        \"color\": \"default\" \n" +
-            "      }] \n" +
-            "    ] \n" +
-            "  } ";
-
     static final int GROUP_ID = 177315584;
 
 
@@ -106,7 +71,7 @@ public class MessageSender {
     }
 
     public void getPaymentChoice(Integer userId) throws Exception {
-
+        final String KEYBOARD_JSON = new String(Files.readAllBytes(Paths.get(getClass().getResource("paymentChoiceKeyboard.json").toURI())));
         sendKeyboard(userId, KEYBOARD_JSON);
     }
 }
