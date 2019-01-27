@@ -1,6 +1,8 @@
 package com.sber.jukeBox.vk;
 
+import com.sber.jukeBox.datastore.InvoiceList;
 import com.sber.jukeBox.datastore.JukeBoxStoreImpl;
+import com.sber.jukeBox.model.Invoice;
 import com.sber.jukeBox.model.TrackEntity;
 import com.vk.api.sdk.callback.CallbackApi;
 import com.vk.api.sdk.objects.audio.AudioFull;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,6 +37,9 @@ public class CallbackApiHandler extends CallbackApi {
     private JukeBoxStoreImpl jukeBoxStore;
 
     @Autowired
+    private InvoiceList invoiceList;
+
+    @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
     private JukeboxMapper jukeboxMapper;
@@ -44,6 +50,20 @@ public class CallbackApiHandler extends CallbackApi {
 
     private static final String BEGIN_KEYWORD = "Начать";
     private static final String PAYMENT_KEYWORD = "Оплатить";
+
+    private HashMap<String, Integer> paymentChoiceCollection = createMapPayment();
+
+    private static HashMap<String, Integer> createMapPayment() {
+        HashMap<String, Integer> paymentMap = new HashMap<>();
+
+        paymentMap.put("Сбер", 1);
+        paymentMap.put("Qiwi", 2);
+        paymentMap.put("Visa/Mastercard", 3);
+        paymentMap.put("VkPay", 4);
+
+        return paymentMap;
+    }
+
     private static boolean isConfirmation;
 
     public CallbackApiHandler() {
@@ -63,8 +83,19 @@ public class CallbackApiHandler extends CallbackApi {
                 sender.welcome(userId);
                 return;
             }
+            sender.askPayment(userId);
             if (PAYMENT_KEYWORD.equals(message.getBody())) {
-                generateInvoice(userId);
+                askPaymentCode(userId);
+                return;
+            }
+            if (paymentChoiceCollection.containsValue(message.getBody())) {
+                int paymentCode = paymentChoiceCollection.get(message.getBody());
+
+                Invoice invoice = new Invoice(message.getActionEmail(), message.getUserId(), Invoice.Status.Wait, paymentCode);
+                invoiceList.addInvoice(invoice);
+
+                // wait some time
+
             }
             if (!jukeboxMapper.checkUser(message)) {
                 if (!jukeboxMapper.addUser(message)) {
@@ -86,12 +117,18 @@ public class CallbackApiHandler extends CallbackApi {
         }
     }
 
-    private void generateInvoice(int userId) throws Exception {
+    private void processingInvoice(Invoice invoice) throws Exception {
+        // after some time
+        invoice.setPaymentStatus(Invoice.Status.Success);
+        if (invoice.getPaymentStatus() == Invoice.Status.Success) {
+            sender.sendSuccessPayment(invoice.getUserId());
+        }
+    }
+
+
+    private void askPaymentCode(int userId) throws Exception {
 
         sender.getPaymentChoice(userId);
-
-        // processingInvoice()
-
     }
 
     private synchronized boolean isMessageProcessed(Integer messageId) {

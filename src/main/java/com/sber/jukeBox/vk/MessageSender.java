@@ -23,8 +23,11 @@ public class MessageSender {
     private static final String REQUEST_ID_MESSAGE = "Пожалуйста, перед отправкой аудиозаписей введите ваш идентификатор.";
     private static final String CONFIRMATION_MESSAGE = "Теперь вы можете отправить аудио для добавление в очередь.";
     private static final String TRACK_ADDED_MESSAGE = "Аудиозапись \"%s\" добавлена в очередь!";
+    private static final String PAYMENT_TIP = "Напишите 'оплатить', чтобы начать процесс оплаты";
     private static final String PAYMENT_MESSAGE = "Выберите способ оплаты.";
     private static final String KEYBOARD = "keyboard";
+    public static final String SUCCESS_PAYMENT = "Обработка платежа успешно завершена";
+
     static final int GROUP_ID = 177315584;
 
 
@@ -73,5 +76,13 @@ public class MessageSender {
     public void getPaymentChoice(Integer userId) throws Exception {
         final String KEYBOARD_JSON = new String(Files.readAllBytes(Paths.get(getClass().getResource("paymentChoiceKeyboard.json").toURI())));
         sendKeyboard(userId, KEYBOARD_JSON);
+    }
+
+    public void askPayment(Integer userId) throws Exception {
+        send(userId, PAYMENT_TIP);
+    }
+
+    public void sendSuccessPayment(Integer userId) throws Exception {
+        send(userId, SUCCESS_PAYMENT);
     }
 }
