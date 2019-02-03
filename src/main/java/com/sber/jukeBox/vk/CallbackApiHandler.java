@@ -108,15 +108,16 @@ public class CallbackApiHandler extends CallbackApi {
             }
             if (!isEmpty(message.getAttachments())) {
                 for (MessageAttachment attachment : message.getAttachments()) {
-                    if (MessageAttachmentType.AUDIO == attachment.getType()
-                            && invoiceList.getInvoice(invoiceId).getPaymentStatus() == Invoice.Status.Success) {
+                    if (MessageAttachmentType.AUDIO == attachment.getType())
+//                            && invoiceList.getInvoice(invoiceId).getPaymentStatus() == Invoice.Status.Success)
+                    {
                         addTrack(userId, attachment);
-                    } else {
-                        sender.sendRemindInvoice(userId, invoiceId);
+//                    } else {
+//                        sender.sendRemindInvoice(userId, invoiceId);
                     }
                 }
                 refreshPlaylist(jukeboxMapper.getJukeboxIdByUser(userId));
-                sender.askPayment(userId);
+//                sender.askPayment(userId);
             }
         } catch (Exception e) {
             log.error("Exception while handling new message", e);

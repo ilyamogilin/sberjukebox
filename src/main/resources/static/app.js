@@ -13,7 +13,7 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('http://javathon.kolebor.ru:8100/');
+    var socket = new SockJS('http://jointvibe.ru:80/');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);

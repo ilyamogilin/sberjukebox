@@ -40,7 +40,7 @@ public class MusicController {
         return "ok";
     }
 
-    @RequestMapping(value = {"/", "/1"})
+    @RequestMapping(value = {"/", "/1", "/2"})
     public String homePage(){
         return "index";
     }
