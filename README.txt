@@ -1,0 +1,1 @@
+just run ./deploy/deploy.sh from project root

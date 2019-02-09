@@ -13,7 +13,7 @@
         }
 
         var C = "SOCKET_START", T = "SOCKET_MESSAGE", R = "SET_CONNECTION", _ = null,
-            A = new x.a("http://10.8.30.31:8100/ws");
+            A = new x.a("http://jointvibe.ru/ws");
 
         function I(e) {
             _.send("/app/test/".concat(e))
