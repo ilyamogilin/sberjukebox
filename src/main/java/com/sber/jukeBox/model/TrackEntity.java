@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class TrackEntity {
 
     private int userId;
-    private int jukeboxId;
+    private String jukeboxId;
     private String trackName;
     private String artistName;
     private String trackUrl;

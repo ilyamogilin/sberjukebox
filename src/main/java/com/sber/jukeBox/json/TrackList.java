@@ -8,13 +8,23 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class TrackList {
 
+    public static TrackList emptyPlaylist(){
+        return TrackList.builder().tracks(emptyList()).build();
+    }
+
+    public TrackList(List<TrackEntity> trackList) {
+        this.tracks = trackList;
+    }
+
     private TrackEntity nowPlaying;
 
-    private List<TrackEntity> trackList;
+    private List<TrackEntity> tracks;
 }

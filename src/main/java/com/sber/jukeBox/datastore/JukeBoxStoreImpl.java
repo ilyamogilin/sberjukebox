@@ -1,77 +1,62 @@
 package com.sber.jukeBox.datastore;
 
+import com.sber.jukeBox.datastore.api.JukeBox;
 import com.sber.jukeBox.datastore.api.JukeBoxStore;
 import com.sber.jukeBox.json.TrackList;
 import com.sber.jukeBox.model.TrackEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
+import static com.sber.jukeBox.json.TrackList.emptyPlaylist;
+
+/**
+ * @author FORESTER
+ */
 @Component
 public class JukeBoxStoreImpl implements JukeBoxStore {
 
-    private Map<Integer, Boolean> isPlayerEmptyMap = new HashMap<>();
-    private Map<Integer, List<TrackEntity>> trackStore = new ConcurrentHashMap<>();
-    private TrackList trackList;
+    private Map<String, JukeBoxImpl> jukeBoxes = new HashMap<>();
 
+    @Override
     public void addTrack(TrackEntity track) {
-        trackStore.computeIfAbsent(track.getJukeboxId(), k -> new ArrayList<>()).add(track);
-        isPlayerEmptyMap.computeIfAbsent(track.getJukeboxId(), k -> true);
-    }
-
-    public TrackList getTracksWithNowPlaying(int jukeboxId) {
-        if (!trackStore.containsKey(jukeboxId)) {
-            return emptyTrackList();
+        if (isEmpty(track.getJukeboxId())) {
+            throw new RuntimeException("JukeBoxId is empty");
         }
-        List<TrackEntity> playlist = trackStore.get(jukeboxId);
-        if (playlist.isEmpty()){
-            return emptyTrackList();
+        JukeBox jukeBox;
+        synchronized (track.getJukeboxId()) {
+            jukeBox = jukeBoxes.computeIfAbsent(track.getJukeboxId(), k -> new JukeBoxImpl());
         }
-        TrackEntity nowPlaying = playlist.get(0);
-        playlist.remove(nowPlaying);
-        isPlayerEmptyMap.replace(jukeboxId, playlist.isEmpty());
-        return TrackList.builder().nowPlaying(nowPlaying).trackList(playlist).build();
+        jukeBox.addTrack(track);
     }
 
-    private TrackList emptyTrackList(){
-        return TrackList.builder().build();
-    }
-
-    public TrackList getAllTracks(int jukeboxId) {
-        if (!trackStore.containsKey(jukeboxId)) {
-            throw new RuntimeException("Track List with id: " + jukeboxId + " is not found");
+    @Override
+    public TrackList popTrackListWithNowPlaying(String jukeboxId) {
+        if (!jukeBoxes.containsKey(jukeboxId)) {
+            return emptyPlaylist();
         }
-        return TrackList.builder().trackList(trackStore.get(jukeboxId)).build();
+        return jukeBoxes.get(jukeboxId).popTrackListWithNowPlaying();
     }
 
-    public boolean isPlayerEmpty(int jukeboxId){
-        if (isPlayerEmptyMap.containsKey(jukeboxId)) {
-            return isPlayerEmptyMap.get(jukeboxId);
+    @Override
+    public TrackList getTrackList(String jukeboxId) {
+        if (!jukeBoxes.containsKey(jukeboxId)) {
+            return emptyPlaylist();
         }
-        return true;
+        return jukeBoxes.get(jukeboxId).getTrackList();
     }
 
-    public void setPlayerEmpty(int jukeboxId, boolean isEmpty){
-        if (isPlayerEmptyMap.containsKey(jukeboxId)){
-            isPlayerEmptyMap.replace(jukeboxId, isEmpty);
+    @Override
+    public boolean isEmpty(String jukeboxId) {
+        if (!jukeBoxes.containsKey(jukeboxId)) {
+            return true;
         }
+        return jukeBoxes.get(jukeboxId).isEmpty();
     }
 
-    public TrackList getTracksListMock(){
-        TrackList trackList = new TrackList();
-        TrackEntity trackEntity = TrackEntity.builder()
-                .trackName("track")
-                .trackUrl("https://cs1-76v4.vkuseraudio.net/p17/641974acff62ce.mp3?extra=omaFKfh6z_pP8x4kSaFY_1P3w5lrS8WClK_T42z391nAScE8Tn7zhsOBGx6Sb5tZeBlU2rZbdtlR19SL1dWa7g1u-rdOf8-YjquJA7VQYX5J5zVgioPkwz0OBcDApmktg4OjoAoGSTa4oQGKv8hwjrzA")
-                .artistName("artist")
-                .userId(321)
-                .build();
-
-        trackList.setNowPlaying(trackEntity);
-        ArrayList<TrackEntity> list = new ArrayList<>();
-        list.add(trackEntity);
-        list.add(trackEntity);
-        trackList.setTrackList(list);
-        return trackList;
+    @Override
+    public TrackList getTrackListOrPopIfEmpty(String jukeboxId) {
+        return isEmpty(jukeboxId) ? popTrackListWithNowPlaying(jukeboxId) : getTrackList(jukeboxId);
     }
 }

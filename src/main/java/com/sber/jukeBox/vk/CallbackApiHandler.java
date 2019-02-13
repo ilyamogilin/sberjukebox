@@ -72,6 +72,13 @@ public class CallbackApiHandler extends CallbackApi {
     }
 
     @Override
+    public void confirmation(Integer groupId) {
+        if (GROUP_ID == groupId) {
+            setConfirmation(true);
+        }
+    }
+
+    @Override
     public void messageNew(Integer groupId, Message message) {
         log.info("New message!!");
         Integer userId = message.getUserId();
@@ -97,7 +104,6 @@ public class CallbackApiHandler extends CallbackApi {
                 sender.sendInvoice(invoice, userId, invoiceId);
 
 
-
             }
             if (!jukeboxMapper.checkUser(message)) {
                 if (!jukeboxMapper.addUser(message)) {
@@ -106,19 +112,7 @@ public class CallbackApiHandler extends CallbackApi {
                 }
                 sender.jukeboxIdConfirmed(userId);
             }
-            if (!isEmpty(message.getAttachments())) {
-                for (MessageAttachment attachment : message.getAttachments()) {
-                    if (MessageAttachmentType.AUDIO == attachment.getType())
-//                            && invoiceList.getInvoice(invoiceId).getPaymentStatus() == Invoice.Status.Success)
-                    {
-                        addTrack(userId, attachment);
-//                    } else {
-//                        sender.sendRemindInvoice(userId, invoiceId);
-                    }
-                }
-                refreshPlaylist(jukeboxMapper.getJukeboxIdByUser(userId));
-//                sender.askPayment(userId);
-            }
+            processAttachments(message, userId);
         } catch (Exception e) {
             log.error("Exception while handling new message", e);
         }
@@ -137,6 +131,18 @@ public class CallbackApiHandler extends CallbackApi {
         return false;
     }
 
+    private void processAttachments(Message message, int userId) throws Exception{
+        if (!isEmpty(message.getAttachments())) {
+            for (MessageAttachment attachment : message.getAttachments()) {
+                if (MessageAttachmentType.AUDIO == attachment.getType())
+                {
+                    addTrack(userId, attachment);
+                }
+            }
+            sendTrackList(jukeboxMapper.getJukeboxIdByUser(userId));
+        }
+    }
+
     private void addTrack(Integer userId, MessageAttachment attachment) throws Exception {
         AudioFull audio = attachment.getAudio();
         TrackEntity track = TrackEntity.builder()
@@ -150,20 +156,9 @@ public class CallbackApiHandler extends CallbackApi {
         sender.audioAdded(userId, track.getFullName());
     }
 
-    private void refreshPlaylist(Integer jukeboxId) {
-        TrackList trackList = jukeBoxStore.isPlayerEmpty(jukeboxId) ?
-                jukeBoxStore.getTracksWithNowPlaying(jukeboxId) : jukeBoxStore.getAllTracks(jukeboxId);
-        if (trackList.getNowPlaying() != null){
-            jukeBoxStore.setPlayerEmpty(jukeboxId, false);
-        }
-        simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT + "/" + jukeboxId, trackList);
-    }
-
-    @Override
-    public void confirmation(Integer groupId) {
-        if (GROUP_ID == groupId) {
-            setConfirmation(true);
-        }
+    private void sendTrackList(String jukeBoxId){
+        simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT + "/" + jukeBoxId,
+                jukeBoxStore.getTrackListOrPopIfEmpty(jukeBoxId));
     }
 
     public static boolean isConfirmation() {

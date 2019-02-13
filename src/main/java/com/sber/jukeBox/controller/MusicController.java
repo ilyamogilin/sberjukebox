@@ -25,12 +25,9 @@ public class MusicController {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @MessageMapping("/test/{jukeboxId}")
-    public void getTracks(@DestinationVariable int jukeboxId) {
-        log.info("getTracks() METHOD CALLED");
-        TrackList trackList = jukeBoxStore.getTracksWithNowPlaying(jukeboxId);
-        if (trackList.getNowPlaying() == null){
-            jukeBoxStore.setPlayerEmpty(jukeboxId, true);
-        }
+    public void getTracks(@DestinationVariable String jukeboxId) {
+        log.info("getTrackList() METHOD CALLED");
+        TrackList trackList = jukeBoxStore.popTrackListWithNowPlaying(jukeboxId);
         simpMessagingTemplate.convertAndSend(TOPIC_ENDPOINT + "/" + jukeboxId, trackList);
         return;
     }

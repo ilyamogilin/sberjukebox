@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class JukeboxMapper {
 
-    private Map<Integer, Integer> userMap = new HashMap<>();
+    private Map<Integer, String> userMap = new HashMap<>();
 
     public boolean checkUser(Message message) {
         return userMap.containsKey(message.getUserId());
@@ -19,14 +19,14 @@ public class JukeboxMapper {
 
     public boolean addUser(Message message) {
         try {
-            userMap.put(message.getUserId(), Integer.parseInt(message.getBody()));
+            userMap.put(message.getUserId(), message.getBody());
         } catch (NumberFormatException e) {
             return false;
         }
         return true;
     }
 
-    public Integer getJukeboxIdByUser(Integer userId) {
+    public String getJukeboxIdByUser(Integer userId) {
         return userMap.get(userId);
     }
 }
