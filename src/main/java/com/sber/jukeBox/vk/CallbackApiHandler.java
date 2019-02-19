@@ -2,7 +2,6 @@ package com.sber.jukeBox.vk;
 
 import com.sber.jukeBox.datastore.InvoiceList;
 import com.sber.jukeBox.datastore.JukeBoxStoreImpl;
-import com.sber.jukeBox.json.TrackList;
 import com.sber.jukeBox.model.Invoice;
 import com.sber.jukeBox.model.TrackEntity;
 import com.vk.api.sdk.callback.CallbackApi;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static com.sber.jukeBox.controller.MusicController.TOPIC_ENDPOINT;
@@ -52,23 +52,18 @@ public class CallbackApiHandler extends CallbackApi {
     private static final String BEGIN_KEYWORD = "Начать";
     private static final String PAYMENT_KEYWORD = "Оплатить";
 
-    private HashMap<String, Integer> paymentChoiceCollection;
-
-    private void initMapPayment() {
-        paymentChoiceCollection = new HashMap<>();
-
-        paymentChoiceCollection.put("Сбер", 1);
-        paymentChoiceCollection.put("Qiwi", 2);
-        paymentChoiceCollection.put("Visa/Mastercard", 3);
-        paymentChoiceCollection.put("VkPay", 4);
-    }
+    private static final Map<String, Integer> PAYMENT_CHOICE = new HashMap<String, Integer>() {{
+        put("Sberbank", 1);
+        put("Qiwi", 2);
+        put("Visa/Mastercard", 3);
+        put("VkPay", 4);
+    }};
 
     private static boolean isConfirmation;
 
     public CallbackApiHandler() {
         jukeboxMapper = new JukeboxMapper();
         messageIds = new HashSet<>();
-        initMapPayment();
     }
 
     @Override
@@ -82,29 +77,40 @@ public class CallbackApiHandler extends CallbackApi {
     public void messageNew(Integer groupId, Message message) {
         log.info("New message!!");
         Integer userId = message.getUserId();
+
+//        if (isMessageProcessed(message.getId())) {
+//            return;
+//        }
+
         try {
-            if (isMessageProcessed(message.getId())) {
-                return;
+            switch (message.getBody()) {
+                case BEGIN_KEYWORD:
+                    sender.welcome(userId);
+                    return;
+                case PAYMENT_KEYWORD:
+                    askPaymentCode(userId);
+                    return;
             }
-            if (BEGIN_KEYWORD.equals(message.getBody())) {
-                sender.welcome(userId);
-                return;
-            }
-            if (PAYMENT_KEYWORD.equals(message.getBody())) {
-                askPaymentCode(userId);
-                return;
-            }
-            int invoiceId = 0;
-            if (paymentChoiceCollection.containsKey(message.getBody())) {
-                int paymentCode = paymentChoiceCollection.get(message.getBody());
+        } catch (Exception e) {
+            log.debug("Exception while handling new message", e);
+            throw new RuntimeException("Failed to start messaging process", e);
+        }
 
-                Invoice invoice = new Invoice(message.getActionEmail(), message.getUserId(), Invoice.Status.Wait, paymentCode);
-                invoiceId = invoiceList.addInvoice(invoice);
-
+        PAYMENT_CHOICE.computeIfPresent(message.getBody(), (key, value) -> {
+            Invoice invoice = new Invoice(message.getActionEmail(),
+                    message.getUserId(),
+                    Invoice.Status.Wait, value);
+            int invoiceId = invoiceList.addInvoice(invoice);
+            try {
                 sender.sendInvoice(invoice, userId, invoiceId);
-
-
+            } catch (Exception e) {
+                log.debug("Exception while handling new message", e);
+                throw new RuntimeException("User cannot be reached.", e);
             }
+            return value;
+        });
+
+        try {
             if (!jukeboxMapper.checkUser(message)) {
                 if (!jukeboxMapper.addUser(message)) {
                     sender.requestJukeboxId(userId);
@@ -114,7 +120,7 @@ public class CallbackApiHandler extends CallbackApi {
             }
             processAttachments(message, userId);
         } catch (Exception e) {
-            log.error("Exception while handling new message", e);
+            log.debug("Exception while handling new message", e);
         }
     }
 
@@ -123,6 +129,7 @@ public class CallbackApiHandler extends CallbackApi {
         sender.getPaymentChoice(userId);
     }
 
+    //TODO think about is this method so necessary
     private synchronized boolean isMessageProcessed(Integer messageId) {
         if (messageIds.contains(messageId)) {
             return true;
@@ -131,7 +138,7 @@ public class CallbackApiHandler extends CallbackApi {
         return false;
     }
 
-    private void processAttachments(Message message, int userId) throws Exception{
+    private void processAttachments(Message message, Integer userId) throws Exception{
         if (!isEmpty(message.getAttachments())) {
             for (MessageAttachment attachment : message.getAttachments()) {
                 if (MessageAttachmentType.AUDIO == attachment.getType())

@@ -3,8 +3,7 @@ package com.sber.jukeBox.datastore;
 import com.sber.jukeBox.datastore.api.JukeBox;
 import com.sber.jukeBox.json.TrackList;
 import com.sber.jukeBox.model.TrackEntity;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.*;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ import static com.sber.jukeBox.json.TrackList.emptyPlaylist;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author FORESTER
@@ -21,7 +20,7 @@ public class JukeBoxPushPopTests {
 
     private JukeBox jukeBox;
 
-    @BeforeEach
+    @Before
     public void clearJukeBox() {
         jukeBox = new JukeBoxImpl();
     }

@@ -3,14 +3,13 @@ package com.sber.jukeBox.datastore;
 import com.sber.jukeBox.datastore.api.JukeBox;
 import com.sber.jukeBox.json.TrackList;
 import com.sber.jukeBox.model.TrackEntity;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.*;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author FORESTER
@@ -19,7 +18,7 @@ public class JukeBoxFairQueueTests {
 
     private JukeBox jukeBox;
 
-    @BeforeEach
+    @Before
     public void clearJukeBox() {
         jukeBox = new JukeBoxImpl();
     }
