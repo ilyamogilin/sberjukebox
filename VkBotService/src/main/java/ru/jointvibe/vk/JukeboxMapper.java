@@ -1,6 +1,7 @@
 package ru.jointvibe.vk;
 
 import com.vk.api.sdk.objects.messages.Message;
+import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
